@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEOUL_Secure 와이파이 연결</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 20px; text-align: center; background: #f8f9fa; }
+        .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; margin-top: 10px; }
+        .btn-android { background-color: #3ddc84; color: #000; }
+        .btn-ios { background-color: #007aff; }
+        .guide { margin-top: 15px; font-size: 13px; color: #666; text-align: left; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>SEOUL_Secure 연결</h2>
+    <p style="color:#666; font-size:14px; margin-bottom:20px;">원클릭 연결 및 설정 가이드</p>
+
+    <!-- OS별 자동 전환 버튼 영역 -->
+    <div id="action-area"></div>
+
+    <div class="guide" id="guide-area"></div>
+</div>
+
+<script>
+    const userAgent = navigator.userAgent.toLowerCase();
+    const actionArea = document.getElementById('action-area');
+    const guideArea = document.getElementById('guide-area');
+
+    // ID/비밀번호 복사 함수
+    function copyCredentials() {
+        navigator.clipboard.writeText("seoul");
+    }
+
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+        // iOS 접속 처리
+        actionArea.innerHTML = `
+            <a href="seoul_wifi.mobileconfig" download>
+                <button class="btn btn-ios">iOS 와이파이 프로필 다운로드</button>
+            </a>
+        `;
+        guideArea.innerHTML = `
+            <b>iOS 설정 방법:</b><br>
+            1. 버튼 클릭 후 프로필 다운로드 허용<br>
+            2. [설정] 앱 상단의 <b>'프로필이 다운로드됨'</b> 선택<br>
+            3. 우측 상단 <b>'설치'</b> 클릭 후 완료
+        `;
+    } else if (/android/.test(userAgent)) {
+        // Android 접속 처리
+        actionArea.innerHTML = `
+            <button class="btn btn-android" onclick="connectAndroid()">Wi-Fi 설정 화면 열기</button>
+        `;
+        guideArea.innerHTML = `
+            <b>Android 설정 방법:</b><br>
+            1. 버튼을 누르면 비밀번호(seoul)가 자동 복사됩니다.<br>
+            2. 열린 설정 화면에서 <b>SEOUL_Secure</b> 선택<br>
+            3. EAP: <b>PEAP</b> / ID·PW: <b>seoul</b> 붙여넣기<br>
+            4. CA 인증서: <b>'인증 안 함'</b> 선택 후 연결
+        `;
+    } else {
+        // 기타 PC / 기타 OS
+        actionArea.innerHTML = `<p>모바일 기기(Android/iOS)에서 접속해 주세요.</p>`;
+    }
+
+    function connectAndroid() {
+        copyCredentials();
+        alert("ID/비밀번호('seoul')가 복사되었습니다. 설정 화면으로 이동합니다.");
+        // Android 네트워크 추가 Intent 이동
+        window.location.href = "intent:#Intent;action=android.provider.Settings.ACTION_WIFI_ADD_NETWORK;end";
+    }
+</script>
+
+</body>
+</html>
